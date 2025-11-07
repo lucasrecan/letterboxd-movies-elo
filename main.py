@@ -4,8 +4,8 @@ import json
 import update_elo_from_csv
 import csv
 
-elo_file = "elo.json"
-csv_file = "letterboxd-ribou-data/watchedd..csv" 
+elo_file = "elo_test.json"
+csv_file = "letterboxd-ribou-data/watched.csv" 
 default_elo = 1000
 
 def has_csv_changed(movies, csv_file):
@@ -24,22 +24,42 @@ def save_elo(elo, filename="elo.json"):
 def random_duel(movies):
     return random.sample(movies, 2)
 
+
+def calculate_elo_change(elo, movie_a, movie_b, k=32):
+    Ra = elo[movie_a]
+    Rb = elo[movie_b]
+
+    # Probabilités de victoire attendues
+    Ea = 1 / (1 + 10 ** ((Rb - Ra) / 400))
+    Eb = 1 - Ea
+    
+    possible_results = [1, 0, 0.5]
+    deltas = []
+
+    for result in possible_results:
+        deltas.append(round(k * (result - Ea), 1))
+
+    return {
+        "win": deltas[0],
+        "lose": deltas[1],
+        "draw": deltas[2]
+    }
+
 # Calculate and update the new elo for both movies
 # result = 1 if movie_a wins,
 # result = 0 if movie_b wins,
 # result = 0.5 if draw
 def update_elo(elo, movie_a, movie_b, result, k=32): # je choisis un k standard mais plus tard je peux faire un k progressif en fonction du nombre de duels pour accélerer le départ ?
-    Ra = elo[movie_a]
-    Rb = elo[movie_b]
-    # E : probabilité de victoire attendue
-    Ea = 1 / (1 + 10 ** ((Rb - Ra) / 400))
-    Eb = 1 - Ea
+    a_elo_change = calculate_elo_change(elo, movie_a, movie_b, k)
+    if result == 1:
+        delta_a = a_elo_change["win"]
+    elif result == 0:
+        delta_a = a_elo_change["lose"]
+    else:  # 0.5
+        delta_a = a_elo_change["draw"]
 
-    Sa = result
-    Sb = 1 - result
-
-    elo[movie_a] = round(Ra + k * (Sa - Ea))
-    elo[movie_b] = round(Rb + k * (Sb - Eb))
+    elo[movie_a] = round(elo[movie_a] + delta_a)
+    elo[movie_b] = round(elo[movie_b] - delta_a)
 
 # Display ranking
 def show_ranking(elo):
@@ -66,12 +86,16 @@ def main():
 
     while True:
         a, b = random_duel(movies)
+        a_elo_change = calculate_elo_change(elo, a, b)
+        b_elo_change = calculate_elo_change(elo, b, a)
         print(f"Quel film préfères-tu ?")
         print(f"1: {a}  ({elo[a]})")
+        print(f"win: {a_elo_change['win']} | lose: {a_elo_change['lose']} | draw: {a_elo_change['draw']}")
         print(f"2: {b}  ({elo[b]})")
+        print(f"win: {b_elo_change['win']} | lose: {b_elo_change['lose']} | draw: {b_elo_change['draw']}")
         print(f"3: Égalité")
         print(f"4: Passer")
-        print("4: (voir classement)")
+        print("5: (voir classement)")
         print("q: quitter")
 
         choice = input("> ").strip().lower()
