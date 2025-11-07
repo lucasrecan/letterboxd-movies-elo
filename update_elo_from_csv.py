@@ -2,9 +2,9 @@ import json
 import os
 import csv
 
-csv_file = "letterboxd-ribou-data/watched.csv"     # ton export Letterboxd
-elo_file = "elo.json"      # fichier de scores Elo
-default_elo = 1000         # valeur par défaut pour les nouveaux films
+csv_file = "letterboxd-ribou-data/watched.csv"
+elo_file = "elo.json"
+default_elo = 1000
 
 def update():
     with open(csv_file, newline='', encoding='utf-8') as f:
@@ -13,11 +13,14 @@ def update():
 
     print(f"Importé {len(movies)} films depuis {csv_file}")
 
-    if os.path.exists(elo_file):
+    if not os.path.exists(elo_file):
+        with open(elo_file, "w", encoding="utf-8") as f:
+            pass
+        print("elo.json created")
+        elo = {}
+    else:
         with open(elo_file, "r", encoding="utf-8") as f:
             elo = json.load(f)
-    else:
-        elo = {}
     added = 0
     for movie in movies:
         if movie not in elo:

@@ -1,8 +1,19 @@
+import os
 import random
 import json
 import update_elo_from_csv
+import csv
 
-elo_file = "elo.json"      # fichier de scores Elo
+elo_file = "elo.json"
+csv_file = "letterboxd-ribou-data/watchedd..csv" 
+default_elo = 1000
+
+def has_csv_changed(movies, csv_file):
+    with open(csv_file, newline='', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        csv_movies = [row["Name"].strip() for row in reader if row["Name"].strip()]
+    return not(len(movies) == len(csv_movies))
+
 
 # Saving the new score in elo.json
 def save_elo(elo, filename="elo.json"):
@@ -32,14 +43,19 @@ def show_ranking(elo):
         print(f"{i:2d}. {movie:25s} ({rating})")
 
 def main():
-    with open(elo_file, "r", encoding="utf-8") as f:
-        elo = json.load(f)
-    
-    if len(elo) == 0:
+    # create elo.json if it doesn't exist
+    if not os.path.exists(elo_file):
         update_elo_from_csv.update()
 
+    if os.path.getsize(elo_file) == 0:
+        print("No movies to rank. Initialize csv_file with the path of your file with a column titled 'Name'.")
+        exit(1)
+
+    with open(elo_file, "r", encoding="utf-8") as f:
+        elo = json.load(f)
+
     movies = list(elo.keys())
-    # print(movies)
+        
     print("Système de duels ELO - Letterboxd\n")
 
     while True:
@@ -47,7 +63,7 @@ def main():
         print(f"Quel film préfères-tu ?")
         print(f"1: {a}  ({elo[a]})")
         print(f"2: {b}  ({elo[b]})")
-        print(f"3: Égalité ou passer")
+        print(f"3: Passer")
         print("4: (voir classement)")
         print("q: quitter")
 
@@ -71,6 +87,7 @@ def main():
         save_elo(elo)
 
     print("Progression sauvegardée. À bientôt !")
+    exit(0)
 
 if __name__ == "__main__":
     main()
