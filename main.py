@@ -8,6 +8,7 @@ elo_file = "elo.json"
 csv_file = "letterboxd-ribou-data/watched.csv" 
 default_elo = 1000
 max_elo_difference = 25
+elo_factor = 32
 
 def has_csv_changed(movies, csv_file):
     with open(csv_file, newline='', encoding='utf-8') as f:
@@ -42,7 +43,7 @@ def select_duel(movies, elo, max_diff=max_elo_difference):
         movie_b = random.choice(close_movies)
     return movie_a, movie_b
 
-def calculate_elo_change(elo, movie_a, movie_b, k=32):
+def calculate_elo_change(elo, movie_a, movie_b, k=elo_factor):
     Ra = elo[movie_a]
     Rb = elo[movie_b]
 
