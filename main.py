@@ -24,16 +24,22 @@ def save_elo(elo, filename="elo.json"):
 def random_duel(movies):
     return random.sample(movies, 2)
 
-# Calculate and update the new elo for both mobies
-def update_elo(elo, winner, loser, k=32): # je choisis un k standard mais plus tard je peux faire un k progressif en fonction du nombre de duels pour accélerer le départ ?
-    Ra = elo[winner]
-    Rb = elo[loser]
+# Calculate and update the new elo for both movies
+# result = 1 if movie_a wins,
+# result = 0 if movie_b wins,
+# result = 0.5 if draw
+def update_elo(elo, movie_a, movie_b, result, k=32): # je choisis un k standard mais plus tard je peux faire un k progressif en fonction du nombre de duels pour accélerer le départ ?
+    Ra = elo[movie_a]
+    Rb = elo[movie_b]
     # E : probabilité de victoire attendue
     Ea = 1 / (1 + 10 ** ((Rb - Ra) / 400))
     Eb = 1 - Ea
 
-    elo[winner] = round(Ra + k * (1 - Ea))
-    elo[loser] = round(Rb + k * (0 - Eb))
+    Sa = result
+    Sb = 1 - result
+
+    elo[movie_a] = round(Ra + k * (Sa - Ea))
+    elo[movie_b] = round(Rb + k * (Sb - Eb))
 
 # Display ranking
 def show_ranking(elo):
@@ -63,19 +69,22 @@ def main():
         print(f"Quel film préfères-tu ?")
         print(f"1: {a}  ({elo[a]})")
         print(f"2: {b}  ({elo[b]})")
-        print(f"3: Passer")
+        print(f"3: Égalité")
+        print(f"4: Passer")
         print("4: (voir classement)")
         print("q: quitter")
 
         choice = input("> ").strip().lower()
 
         if choice == "1":
-            update_elo(elo, a, b)
+            update_elo(elo, a, b, result=1)
         elif choice == "2":
-            update_elo(elo, b, a)
+            update_elo(elo, a, b, result=0)
         elif choice == "3":
-            continue
+            update_elo(elo, a, b, result=0.5)
         elif choice == "4":
+            continue
+        elif choice == "5":
             show_ranking(elo)
             continue
         elif choice == "q":
