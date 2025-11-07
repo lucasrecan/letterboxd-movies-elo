@@ -7,6 +7,7 @@ import csv
 elo_file = "elo_test.json"
 csv_file = "letterboxd-ribou-data/watched.csv" 
 default_elo = 1000
+max_elo_difference = 25
 
 def has_csv_changed(movies, csv_file):
     with open(csv_file, newline='', encoding='utf-8') as f:
@@ -24,6 +25,22 @@ def save_elo(elo, filename=elo_file):
 def random_duel(movies):
     return random.sample(movies, 2)
 
+def select_duel(movies, elo, max_diff=max_elo_difference):
+    movie_a = random.choice(movies)
+    rating_a = elo[movie_a]
+    close_movies = []
+    for m in movies:
+        if m != movie_a:
+            diff = abs(elo[m] - rating_a)
+            if diff <= max_diff:
+                close_movies.append(m)
+
+    if len(close_movies) == 0:
+        print(f"No movie with a elo difference lower than {max_diff}, random movie selected")
+        movie_b = random.choice([m for m in movies if m != movie_a])
+    else:
+        movie_b = random.choice(close_movies)
+    return movie_a, movie_b
 
 def calculate_elo_change(elo, movie_a, movie_b, k=32):
     Ra = elo[movie_a]
@@ -67,6 +84,7 @@ def show_ranking(elo):
     ranked = sorted(elo.items(), key=lambda x: x[1], reverse=True)
     for i, (movie, rating) in enumerate(ranked, 1):
         print(f"{i:2d}. {movie:25s} ({rating})")
+    input("Press Enter to continue...")
 
 def main():
     # create elo.json if it doesn't exist
@@ -85,7 +103,7 @@ def main():
     print("Système de duels ELO - Letterboxd\n")
 
     while True:
-        a, b = random_duel(movies)
+        a, b = select_duel(movies, elo)
         a_elo_change = calculate_elo_change(elo, a, b)
         b_elo_change = calculate_elo_change(elo, b, a)
         print(f"Quel film préfères-tu ?")
