@@ -66,7 +66,7 @@ def calculate_elo_change(elo, movie_a, movie_b, k=32):
 # result = 1 if movie_a wins,
 # result = 0 if movie_b wins,
 # result = 0.5 if draw
-def update_elo(elo, movie_a, movie_b, result, k=32): # je choisis un k standard mais plus tard je peux faire un k progressif en fonction du nombre de duels pour accélerer le départ ?
+def update_elo(elo, movie_a, movie_b, result, k=32):
     a_elo_change = calculate_elo_change(elo, movie_a, movie_b, k)
     if result == 1:
         delta_a = a_elo_change["win"]
