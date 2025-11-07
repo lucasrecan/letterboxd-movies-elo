@@ -4,7 +4,7 @@ import json
 import update_elo_from_csv
 import csv
 
-elo_file = "elo_test.json"
+elo_file = "elo.json"
 csv_file = "letterboxd-ribou-data/watched.csv" 
 default_elo = 1000
 max_elo_difference = 25
@@ -79,11 +79,11 @@ def update_elo(elo, movie_a, movie_b, result, k=32): # je choisis un k standard 
     elo[movie_b] = round(elo[movie_b] - delta_a)
 
 # Display ranking
-def show_ranking(elo):
+def show_ranking(elo, n):
     print("\nClassement actuel :")
-    ranked = sorted(elo.items(), key=lambda x: x[1], reverse=True)
+    ranked = sorted(elo.items(), key=lambda x: x[1], reverse=True)[:n]
     for i, (movie, rating) in enumerate(ranked, 1):
-        print(f"{i:2d}. {movie:25s} ({rating})")
+        print(f"{i:2d}. {movie:35s} ({rating})")
     input("Press Enter to continue...")
 
 def main():
@@ -127,7 +127,9 @@ def main():
         elif choice == "4":
             continue
         elif choice == "5":
-            show_ranking(elo)
+            print(f"Afficher les n premiers éléments (nombre de films : {len(elo)}) avec n : ")
+            nb = input("> ")
+            show_ranking(elo, nb)
             continue
         elif choice == "q":
             break

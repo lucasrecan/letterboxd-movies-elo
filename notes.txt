@@ -2,6 +2,7 @@ faire des options comme :
 réinitialiser le classement (elo.json)
 si csv changé alors demander si on met à jour le json
 extraire le classement (top n avec n <= len(elo) ?)
+afficher le classement mais choisir le top 5
 choisir si on affiche les deltas ou non
 
 
