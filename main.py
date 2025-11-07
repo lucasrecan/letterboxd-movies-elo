@@ -2,29 +2,37 @@ import random
 import json
 import os
 import math
+import csv
 
-# Loading of movies
-def load_movies(filename="movies.json"):
-    if os.path.exists(filename):
-        with open(filename, "r", encoding="utf-8") as f:
-            return json.load(f)
-    else:
-        # Movies example if movies.json doesn't exist
-        movies = ["Matrix", "Parasite", "Mad Max: Fury Road", "Children of Men", "La La Land"]
-        with open(filename, "w", encoding="utf-8") as f:
-            json.dump(movies, f, ensure_ascii=False, indent=2)
-        return movies
+csv_file = "letterboxd-ribou-data/watched.csv"     # ton export Letterboxd
+elo_file = "elo.json"      # fichier de scores Elo
+default_elo = 1000         # valeur par défaut pour les nouveaux films
+
+def load_movies():
+    with open(csv_file, newline='', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        movies = [row["Name"].strip() for row in reader if row["Name"].strip()]
+    print(f"Importé {len(movies)} films depuis {csv_file}")
+    return movies
 
 # Loading of Elo scores
-def load_elo(movies, filename="elo.json"):
-    if os.path.exists(filename):
-        with open(filename, "r", encoding="utf-8") as f:
-            return json.load(f)
+def load_elo(movies, elo_file):
+    if os.path.exists(elo_file):
+        with open(elo_file, "r", encoding="utf-8") as f:
+            elo = json.load(f)
     else:
-        elo = {movie: 1000 for movie in movies}
-        with open(filename, "w", encoding="utf-8") as f:
-            json.dump(elo, f, ensure_ascii=False, indent=2)
-        return elo
+        elo = {}
+    added = 0
+    for movie in movies:
+        if movie not in elo:
+            elo[movie] = default_elo
+            added += 1
+    with open(elo_file, "w", encoding="utf-8") as f:
+        json.dump(elo, f, ensure_ascii=False, indent=2)
+    
+    print(f"{added} nouveaux films ajoutés.")
+    print(f"Total : {len(elo)} films enregistrés dans {elo_file}")
+    return elo
 
 # Saving the new score in elo.json
 def save_elo(elo, filename="elo.json"):
@@ -55,7 +63,8 @@ def show_ranking(elo):
 
 def main():
     movies = load_movies()
-    elo = load_elo(movies)
+    print(movies)
+    elo = load_elo(movies, elo_file)
 
     print("Système de duels ELO - Letterboxd\n")
 
