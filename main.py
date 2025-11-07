@@ -16,7 +16,7 @@ def has_csv_changed(movies, csv_file):
 
 
 # Saving the new score in elo.json
-def save_elo(elo, filename="elo.json"):
+def save_elo(elo, filename=elo_file):
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(elo, f, ensure_ascii=False, indent=2)
 
@@ -117,8 +117,7 @@ def main():
             print("Choix invalide.")
             continue
 
-        save_elo(elo)
-
+    save_elo(elo)
     print("Progression sauvegardée. À bientôt !")
     exit(0)
 
