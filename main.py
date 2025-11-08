@@ -5,7 +5,7 @@ import update_elo_from_csv
 import csv
 
 elo_file = "elo.json"
-csv_file = "letterboxd-ribou-data/watched.csv" 
+csv_file = "letterboxd-ribou-data/ratings.csv" 
 default_elo = 1000
 max_elo_difference = 25
 elo_factor = 32
@@ -130,7 +130,7 @@ def main():
         elif choice == "5":
             print(f"Afficher les n premiers éléments (nombre de films : {len(elo)}) avec n : ")
             nb = input("> ")
-            show_ranking(elo, nb)
+            show_ranking(elo, int(nb))
             continue
         elif choice == "q":
             break

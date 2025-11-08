@@ -22,3 +22,9 @@ récupérer avec l'api de letterboxd directement les films regardés ou parse à
 pour accelerer le classement :
 les x premiers duels d'un film donné donne un delta plus élevé pour classer plus vite
 faire des duels plus malin, genre prendre un film au hasard puis le faire s'affronter avec un film proche en elo (genre diff max 50)
+
+
+obtenir une courbe d'elo
+
+
+extraire les films notés pour donner un elo de base
