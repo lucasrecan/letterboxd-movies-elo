@@ -29,7 +29,7 @@ cd letterboxd-movies-elo
 
 3. Prepare your CSV file exported from Letterboxd with a column named `Name`. Update the path in `main.py` if necessary:  
 ```python
-csv_file = "letterboxd-ribou-data/watched.csv"
+csv_file = "data/watched.csv"
 ```
 
 
